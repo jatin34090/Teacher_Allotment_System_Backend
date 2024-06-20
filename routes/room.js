@@ -62,17 +62,15 @@ router.post("/api/searchrooms", (req, res) => {
     let pattern = new RegExp("^" + req.body.query, "i")
     Room.find({
         roomNo: { $regex: pattern },
+    }).then((rooms) => {
+        if (rooms.length === 0) {
+            res.json({ message: "No room found" });
+        } else {
+            res.json({ rooms });
+        }
+    }).catch((err) => {
+        console.log(err)
     })
-        .select("_id roomNo capacity avalability")
-        .then((rooms) => {
-            if (rooms.length === 0) {
-                res.json({ message: "No room found" });
-            } else {
-                res.json({ rooms });
-            }
-        }).catch((err) => {
-            console.log(err)
-        })
 })
 
 

@@ -19,7 +19,6 @@ router.post("/api/searchTeachers", (req, res) => {
     Teacher.find({
         email: { $regex: pattern },
     })
-        .select("_id email name avalability")
         .then((teachers) => {
             if (teachers.length === 0) {
                 res.json({ message: "No teachers found" });
