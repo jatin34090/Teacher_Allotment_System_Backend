@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const Teacher = require("../models/Teacher");
-const requireLogin = require("../middleware/requiredLogin");
+const requiredLogin = require("../middleware/requiredLogin");
 const { body, validationResult } = require('express-validator');
 
 
-router.get("/api/getallteachers", (req, res) => {
+router.get("/api/getallteachers",requiredLogin, (req, res) => {
     Teacher.find({type: "teacher"})
         .then((teachers) => {
             res.json(teachers);
@@ -13,7 +13,7 @@ router.get("/api/getallteachers", (req, res) => {
             return res.status(422).json({ message: err.msg })
         })
 })
-router.post("/api/getteachers", (req, res) => {
+router.post("/api/getteachers",requiredLogin, (req, res) => {
     const { email } = req.body;
     Teacher.findOne({email: email})
         .then((teacher) => {
@@ -24,7 +24,7 @@ router.post("/api/getteachers", (req, res) => {
         })
 })
 
-router.post("/api/searchTeachers", (req, res) => {
+router.post("/api/searchTeachers",requiredLogin, (req, res) => {
     let pattern = new RegExp("^" + req.body.query, "i")
     Teacher.find({
         email: { $regex: pattern },
@@ -40,7 +40,7 @@ router.post("/api/searchTeachers", (req, res) => {
         })
 })
 
-router.delete("/api/deleteteacher", requireLogin, (req, res) => {
+router.delete("/api/deleteteacher",requiredLogin, requiredLogin, (req, res) => {
     const { email } = req.body;
     if (!email) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -80,7 +80,7 @@ router.post("/api/addteacher", [
     }
 })
 
-router.get('/api/availableteachers', async (req, res) => {
+router.get('/api/availableteachers',requiredLogin, async (req, res) => {
     try {
         const availableTeachers = await Teacher.find({ avalability: true, leave: false });
         res.status(200).json(availableTeachers);
@@ -88,7 +88,7 @@ router.get('/api/availableteachers', async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-router.post('/api/availableteachers', async (req, res) => {
+router.post('/api/availableteachers',requiredLogin, async (req, res) => {
     const { date, shift } = req.body;
     try {
         const availableTeachers = await Teacher.find({
@@ -106,7 +106,7 @@ router.post('/api/availableteachers', async (req, res) => {
     }
 });
 
-router.post('/api/editPreviousTeacher', async (req, res) => {
+router.post('/api/editPreviousTeacher',requiredLogin, async (req, res) => {
     const { email, date, shift } = req.body;
 
     if (!email || !date || !shift) {
@@ -131,7 +131,7 @@ router.post('/api/editPreviousTeacher', async (req, res) => {
 });
 
 
-router.post('/api/editTeacher', async (req, res) => {
+router.post('/api/editTeacher',requiredLogin, async (req, res) => {
     const { email, date, shift, roomNo } = req.body;
     if (!email) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -144,7 +144,7 @@ router.post('/api/editTeacher', async (req, res) => {
 
 })
 
-router.post("/updateteacher", (req, res) => {
+router.post("/updateteacher",requiredLogin, (req, res) => {
     const { email, changedEmail } = req.body;
     if (!email) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -163,7 +163,7 @@ router.post("/updateteacher", (req, res) => {
         })
 })
 
-router.post("/api/updateteacherAvailability", (req, res) => {
+router.post("/api/updateteacherAvailability",requiredLogin, (req, res) => {
     const { email, avalability } = req.body;
     if (!email) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -176,7 +176,7 @@ router.post("/api/updateteacherAvailability", (req, res) => {
         })
 })
 
-router.post("/api/updateLeaveStatus", (req, res) => {
+router.post("/api/updateLeaveStatus",requiredLogin, (req, res) => {
     const { email, leave } = req.body;
     // console.log(email, leave)
     if (!email) {

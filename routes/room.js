@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const Room = require("../models/Room");
-const requireLogin = require("../middleware/requiredLogin");
+const requiredLogin = require("../middleware/requiredLogin");
 
 
 
-router.get("/api/getallrooms", (req, res) => {
+router.get("/api/getallrooms", requiredLogin, (req, res) => {
     Room.find()
         .then((rooms) => {
             res.json(rooms);
@@ -14,7 +14,7 @@ router.get("/api/getallrooms", (req, res) => {
         })
 })
 
-router.get('/api/availablerooms', async (req, res) => {
+router.get('/api/availablerooms',requiredLogin, async (req, res) => {
     try {
         const availableTeachers = await Room.find({ avalability: true });
         res.json(availableTeachers);
@@ -23,7 +23,7 @@ router.get('/api/availablerooms', async (req, res) => {
     }
 });
 
-router.post('/api/editRoom', async (req, res) => {
+router.post('/api/editRoom',requiredLogin, async (req, res) => {
     try {
         const { roomNo, date, shift, newTeacher, prevTeacher } = req.body;
         console.log("roomNo, date, shift, newTeacher, prevTeacher", roomNo, date, shift, newTeacher, prevTeacher)
@@ -58,7 +58,7 @@ router.post('/api/editRoom', async (req, res) => {
     }
 })
 
-router.post("/api/searchrooms", (req, res) => {
+router.post("/api/searchrooms",requiredLogin, (req, res) => {
     let pattern = new RegExp("^" + req.body.query, "i")
     Room.find({
         roomNo: { $regex: pattern },
@@ -74,7 +74,7 @@ router.post("/api/searchrooms", (req, res) => {
 })
 
 
-router.post("/api/addroom", async (req, res) => {
+router.post("/api/addroom",requiredLogin, async (req, res) => {
     const { roomNo, capacity } = req.body;
     if (!roomNo || !capacity) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -100,7 +100,7 @@ router.post("/api/addroom", async (req, res) => {
     }
 })
 
-router.post("/api/updateroom", async (req, res) => {
+router.post("/api/updateroom",requiredLogin, async (req, res) => {
     const { roomNo, updatedRoomNo } = req.body;
     if (!roomNo) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -127,7 +127,7 @@ router.post("/api/updateroom", async (req, res) => {
 })
 
 
-router.post("/api/updateroomavalability", (req, res) => {
+router.post("/api/updateroomavalability",requiredLogin, (req, res) => {
     const { roomNo, avalability } = req.body;
     if (!roomNo) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -141,7 +141,7 @@ router.post("/api/updateroomavalability", (req, res) => {
 })
 
 
-router.get(`/api/getRooms/:id`, async (req, res) => {
+router.get(`/api/getRooms/:id`,requiredLogin, async (req, res) => {
     try {
         const room = await Room.findById(req.params.id);
         if (!room) {
@@ -162,7 +162,7 @@ router.get(`/api/getRooms/:id`, async (req, res) => {
 //     }
 // });
 
-router.get("/getroom", requireLogin, async (req, res) => {
+router.get("/getroom",requiredLogin, async (req, res) => {
     const { roomNo } = req.body;
     if (!roomNo) {
         return res.status(422).json({ error: "Please add all fields" })
@@ -180,7 +180,7 @@ router.get("/getroom", requireLogin, async (req, res) => {
     }
 })
 
-router.delete("/deleteroom", requireLogin, async (req, res) => {
+router.delete("/deleteroom", requiredLogin, async (req, res) => {
     const { roomNo } = req.body;
     if (!roomNo) {
         return res.status(422).json({ error: "Please add all fields" })

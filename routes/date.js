@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const DateModel = require("../models/Date");
+const requiredLogin = require("../middleware/requiredLogin");
 
-router.get("/api/getdate", async (req, res) => {
+router.get("/api/getdate", requiredLogin, async (req, res) => {
     try {
         const date = await DateModel.find();
         res.status(200).json(date);
@@ -10,7 +11,7 @@ router.get("/api/getdate", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 })
-router.post("/api/adddate", async (req, res) => {
+router.post("/api/adddate",requiredLogin, async (req, res) => {
     const { date } = req.body;
     try {
         const newDate = new DateModel({
@@ -22,7 +23,7 @@ router.post("/api/adddate", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 })
-router.get("/api/getalldate", async (req, res) => {
+router.get("/api/getalldate",requiredLogin, async (req, res) => {
     try {
         const date = await DateModel.find();
         res.status(200).json(date);
@@ -32,7 +33,7 @@ router.get("/api/getalldate", async (req, res) => {
 })
 
 
-router.post("/api/getalldate", async (req, res) => {
+router.post("/api/getalldate",requiredLogin, async (req, res) => {
     let pattern = new RegExp("^" + req.body.query, "i")
     DateModel.find({
         date: { $regex: pattern },
@@ -48,7 +49,7 @@ router.post("/api/getalldate", async (req, res) => {
 })
 
 
-router.get('/api/examDates', async (req, res) => {
+router.get('/api/examDates',requiredLogin, async (req, res) => {
     try {
         const uniqueDates = await DateModel.distinct('date');
         console.log("numberOfExamDates", uniqueDates);

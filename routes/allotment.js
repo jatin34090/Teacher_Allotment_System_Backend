@@ -35,10 +35,7 @@ const shuffleArray = (array) => {
 
 };
 
-
-
-
-router.post('/api/allocateTeachers', async (req, res) => {
+router.post('/api/allocateTeachers',requiredLogin, async (req, res) => {
     try {
         const { date } = req.body;
         const rooms = await Room.find({ avalability: true });
@@ -148,12 +145,7 @@ router.post('/api/allocateTeachers', async (req, res) => {
     }
 });
 
-
-
-
-
-
-router.post('/api/clearTeachers', async (req, res) => {
+router.post('/api/clearTeachers',requiredLogin, async (req, res) => {
     const { roomId } = req.body;
     if (!roomId) {
         return res.status(400).json({ error: "Room ID is required" });
@@ -174,6 +166,5 @@ router.post('/api/clearTeachers', async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-
 
 module.exports = router;

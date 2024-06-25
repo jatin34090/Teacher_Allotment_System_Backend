@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const Teacher = require("../models/Teacher");
 module.exports = (req, res, next) => {
     const { authorization } = req.headers;
     if (!authorization) {
@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
             return res.status(401).json({ error: "You must be logged in" });
         }
         const { _id } = payload;
-        User.findById(_id).then(userdata => {
+        Teacher.findById(_id).then(userdata => {
             req.user = userdata;
             next();
         })
