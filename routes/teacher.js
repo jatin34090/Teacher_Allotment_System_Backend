@@ -6,9 +6,19 @@ const { body, validationResult } = require('express-validator');
 
 
 router.get("/api/getallteachers", (req, res) => {
-    Teacher.find()
+    Teacher.find({type: "teacher"})
         .then((teachers) => {
             res.json(teachers);
+        }).catch((err) => {
+            return res.status(422).json({ message: err.msg })
+        })
+})
+router.post("/api/getteachers", (req, res) => {
+    const { email } = req.body;
+    Teacher.findOne({email: email})
+        .then((teacher) => {
+            console.log(teacher);
+            res.json(teacher.allotedRooms);
         }).catch((err) => {
             return res.status(422).json({ message: err.msg })
         })
@@ -44,8 +54,8 @@ router.delete("/api/deleteteacher", requireLogin, (req, res) => {
 })
 
 router.post("/api/addteacher", [
-    // body('name', 'Enter a valid Name').isLength({ min: 3 }),
-    // body('email', 'Enter a valid email').isEmail(),
+    body('name', 'Enter a valid Name').isLength({ min: 3 }),
+    body('email', 'Enter a valid email').isEmail(),
 ], async (req, res) => {
     const { name, email } = req.body;
     if (!name || !email) {

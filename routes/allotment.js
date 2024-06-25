@@ -141,7 +141,7 @@ router.post('/api/allocateTeachers', async (req, res) => {
 
 
         }
-        res.json({ message: 'Teachers allocated successfully', rooms, });
+        res.json({ success: 'Teachers allocated successfully', rooms });
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: err.message });
